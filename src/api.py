@@ -33,11 +33,35 @@ def _clean_json(json_dict):
 
 def parse_vente(json_dict):
     json_dict = _clean_json(json_dict)
+    sireneCedant = "Erreur"
+    raisonSocialeCedant = "Erreur"
+    sirenBeneficiaire = "Erreur"
+    raisonSocialeBeneficiaire = "Erreur"
+    try:
+        sireneCedant = json_dict["listeprecedentproprietaire"]["personne"]["numeroImmatriculation"]["numeroIdentification"].replace(" ", "")
+    except Exception as e: 
+        print(f"An error occurred: {e}")
+
+    try:
+        raisonSocialeCedant = json_dict["listeprecedentproprietaire"]["personne"]["denomination"]
+    except Exception as e: 
+        print(f"An error occurred: {e}")
+
+    try:
+        sirenBeneficiaire = json_dict["listepersonnes"]["personne"]["numeroImmatriculation"]["numeroIdentification"].replace(" ", "")
+    except Exception as e: 
+        print(f"An error occurred: {e}")
+
+    try:
+        raisonSocialeBeneficiaire = json_dict["listepersonnes"]["personne"]["denomination"]
+    except Exception as e: 
+        print(f"An error occurred: {e}")
+
     return {
-        "sirenCedant": json_dict["listeprecedentproprietaire"]["personne"]["numeroImmatriculation"]["numeroIdentification"].replace(" ", ""),
-        'raisonSocialeCedant': json_dict["listeprecedentproprietaire"]["personne"]["denomination"],
-        "sirenBeneficiaire": json_dict["listepersonnes"]["personne"]["numeroImmatriculation"]["numeroIdentification"].replace(" ", ""),
-        "raisonSocialeBeneficiaire": json_dict["listepersonnes"]["personne"]["denomination"],
+        "sirenCedant": sireneCedant,
+        "raisonSocialeCedant": raisonSocialeCedant,
+        "sirenBeneficiaire": sirenBeneficiaire,
+        "raisonSocialeBeneficiaire": raisonSocialeBeneficiaire,
         "source": json_dict["url_complete"]
     }
 
