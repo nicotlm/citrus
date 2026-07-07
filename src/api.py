@@ -23,9 +23,16 @@ class bodacc_api:
         return json.loads(self.get_annonce(annonce_id).content).get("results")[0]
 
 
-def parse_vente(json_dict):
+def _clean_json(json_dict):
     json_dict["listeprecedentproprietaire"] = json.loads(json_dict["listeprecedentproprietaire"])
     json_dict["listepersonnes"] = json.loads(json_dict["listepersonnes"])
+    json_dict["listeetablissements"] = json.loads(json_dict["listeetablissements"])
+
+    return json_dict
+
+
+def parse_vente(json_dict):
+    json_dict = _clean_json(json_dict)
     return {
         "sirenCedant": json_dict["listeprecedentproprietaire"]["personne"]["numeroImmatriculation"]["numeroIdentification"].replace(" ", ""),
         'raisonSocialeCedant': json_dict["listeprecedentproprietaire"]["personne"]["denomination"],
