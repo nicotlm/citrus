@@ -12,6 +12,8 @@ def _clean_string(df, cols=None):
     if cols is None:
         cols = [col for col, dtype in df.schema.items() if dtype == pl.Utf8]
     
+    logger.info(f"Cleaning string format of columns {cols}")
+
     for col in cols: 
         df = df.with_columns(pl.col(col).str.normalize(form="NFKD").str.replace(r"[^\w\s]", ""))
         df = df.with_columns(pl.col(col).str.to_uppercase())
