@@ -1,0 +1,72 @@
+import polars as pl
+from src import logger
+
+
+def _metrics(df, col_citrus, col_bodacc, key="num_bodacc"):
+
+    if key not in df.columns:
+        logger.warning(f"Calculate metrics without key. Aborting.")
+        logger.warning(f"Key {key} absent. Available column names are {df.columns}")
+        return None
+    
+    df = df.select([key, col_citrus, col_bodacc])
+    
+    col_assert = col_citrus + "_assert"
+
+    # Converting data types
+    col_types = df.schema
+    if col_types[col_citrus] != col_types[col_bodacc]:
+        logger.warning(f"Columns {col_citrus} and {col_bodacc} are of different types : {col_types[col_citrus]} and {col_types[col_bodacc]}")
+
+        # If both are numeric, convert to float32. 
+        if col_types[col_bodacc].is_numeric() and col_types[col_citrus].is_numeric():
+            logger.warning(f"Columns {col_citrus} and {col_bodacc} are both numeric - casting them to Float")
+            df = df.cast({col_bodacc: pl.Float32, col_citrus: pl.Float32})
+
+        # Else, convert all to string
+        else:
+            logger.warning(f"Columns {col_citrus} and {col_bodacc} are not numeric - casting them to String")
+            df = df.cast({col_bodacc: pl.Utf8, col_citrus: pl.Utf8})
+
+    col_types = df.schema
+    if col_types[col_citrus].is_numeric():
+        logger.info(f"Columns {col_citrus} and {col_bodacc} are numeric - equal with 0.1 precision")
+        metrics_df = (
+            df.with_columns(
+                (pl.col(col_citrus) - pl.col(col_bodacc).abs() < 0.1).alias(col_assert)
+            )
+            .select([key, col_assert])
+        )
+    else:
+        logger.info(f"Columns {col_citrus} and {col_bodacc} are string - asserting full equality")
+        metrics_df = (
+            df.with_columns(
+                (pl.col(col_citrus) == pl.col(col_bodacc)).alias(col_assert)
+            )
+            .select([key, col_assert])
+        )
+
+    return metrics_df
+
+
+def _add_metrics(previous_metrics_df, new_metrics_df, key="num_bodacc"):
+    logger.info(f"Merging with previous metrics based on column {key}")
+
+    full_metrics_df = previous_metrics_df.join(new_metrics_df, on=key, how="right")
+    return full_metrics_df
+
+
+def calculate_metrics(df):
+    key = "num_bodacc"
+    metrics_df = df.select(key)
+
+    for col_to_assert in [col[:-10] for col in df.columns if col[-10:] == "_apibodacc"]:
+        col_citrus = col_to_assert
+        col_bodacc = col_to_assert + "_apibodacc"
+        metrics_df = _add_metrics(
+            metrics_df,
+            _metrics(df, key=key, col_citrus=col_citrus, col_bodacc=col_bodacc), 
+            key=key
+        )
+
+    return metrics_df
