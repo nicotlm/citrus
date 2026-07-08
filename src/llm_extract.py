@@ -1,4 +1,5 @@
 from src.llm_client import ask_json
+from src import logger
 
 
 def _build_prompt_llm(text_a_extraire) -> list[dict]:
@@ -27,13 +28,17 @@ def _build_prompt_llm(text_a_extraire) -> list[dict]:
 
 Reponds uniquement avec le JSON, par exemple :
 {{"montantNet": 330000}}"""
-    return [
+
+    llm_prompt = [
         {"role": "system", "content": system},
         {"role": "user", "content": user},
     ]
+    logger.debug(f"LLM prompt is {llm_prompt}")
+    return llm_prompt
 
 
 def extract_amount(json_dict):
+    logger.info(f"Extracting amount from {json_dict["listeetablissements"]["etablissement"]["origineFonds"]}")
     return ask_json(
         _build_prompt_llm(json_dict["listeetablissements"]["etablissement"]["origineFonds"])
     )
