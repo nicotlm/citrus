@@ -23,39 +23,51 @@ class bodacc_api:
         return json.loads(self.get_annonce(annonce_id).content).get("results")[0]
 
 
+def _keep_numero_immat(personnes) -> list: 
+    personnes_with_immat = []
+    if isinstance(personnes, list):
+        for personne in personnes:
+            if personne.get("numeroImmatriculation"):
+                personnes_with_immat.append(personne)
+    elif isinstance(personnes, dict):
+        if personnes.get("numeroImmatriculation"):
+            personnes_with_immat.append(personnes)
+
+    return personnes_with_immat
+
+
 def _clean_json(json_dict):
     json_dict["listeprecedentproprietaire"] = json.loads(json_dict["listeprecedentproprietaire"])
+    json_dict["listeprecedentproprietaire_filtered"] = _keep_numero_immat(json_dict["listeprecedentproprietaire"].get("personne", []))
     json_dict["listepersonnes"] = json.loads(json_dict["listepersonnes"])
+    json_dict["listepersonnes_filtered"] = _keep_numero_immat(json_dict["listepersonnes"].get("personne", []))
     json_dict["listeetablissements"] = json.loads(json_dict["listeetablissements"])
 
     return json_dict
 
 
+def _get_siren(json_dict, key="listeprecedentproprietaire_filtered"):
+    """
+    Extract from JSON dict the first Siren from listeprecedentproprietaire
+    """
+    sirene = (json_dict.get(key, {})[0]
+        .get("numeroImmatriculation", {})
+        .get("numeroIdentification", {})
+        .replace(" ", "")
+        )
+    return sirene
+
+
+def _get_rs(json_dict, key="listeprecedentproprietaire_filtered"):
+    return json_dict[key][0].get("denomination", "")
+
+
 def parse_vente(json_dict):
     json_dict = _clean_json(json_dict)
-    sireneCedant = "Erreur"
-    raisonSocialeCedant = "Erreur"
-    sirenBeneficiaire = "Erreur"
-    raisonSocialeBeneficiaire = "Erreur"
-    try:
-        sireneCedant = json_dict["listeprecedentproprietaire"]["personne"]["numeroImmatriculation"]["numeroIdentification"].replace(" ", "")
-    except Exception as e: 
-        print(f"An error occurred: {e}")
-
-    try:
-        raisonSocialeCedant = json_dict["listeprecedentproprietaire"]["personne"]["denomination"]
-    except Exception as e: 
-        print(f"An error occurred: {e}")
-
-    try:
-        sirenBeneficiaire = json_dict["listepersonnes"]["personne"]["numeroImmatriculation"]["numeroIdentification"].replace(" ", "")
-    except Exception as e: 
-        print(f"An error occurred: {e}")
-
-    try:
-        raisonSocialeBeneficiaire = json_dict["listepersonnes"]["personne"]["denomination"]
-    except Exception as e: 
-        print(f"An error occurred: {e}")
+    sireneCedant = _get_siren(json_dict, key="listeprecedentproprietaire_filtered")
+    raisonSocialeCedant = _get_rs(json_dict, key="listeprecedentproprietaire_filtered")
+    sirenBeneficiaire = _get_siren(json_dict, key="listepersonnes_filtered")
+    raisonSocialeBeneficiaire = _get_rs(json_dict, key="listepersonnes_filtered")
 
     return {
         "sirenCedant": sireneCedant,
