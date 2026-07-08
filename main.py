@@ -1,12 +1,12 @@
 
 import os
 
-if os.getcwd() != '/home/onyxia/work/citrus':
+if os.getcwd() != "/home/onyxia/work/citrus":
     os.chdir("citrus")
 
 from src.api import bodacc_api, parse_vente
 from src.llm_extract import extract_amount 
-from src.metrics import calculate_metrics
+from src.metrics import calculate_metrics, filter_metrics_bad, _clean_string
 import polars as pl
 
 api = bodacc_api()
@@ -42,9 +42,12 @@ for row in df.iter_rows(named=True):
 
 from_bodacc_df = pl.DataFrame(l)
 
-from_bodacc_df = from_bodacc_df.with_columns((pl.col("montantNet")/1000).round()).cast({"montantNet": pl.Int64})
+from_bodacc_df = from_bodacc_df.with_columns((pl.col("montantNet")/1000).round(mode="half_away_from_zero")).cast({"montantNet": pl.Int64})
 
+from_bodacc_df = _clean_string(from_bodacc_df, cols=["raisonSocialeCedant", "raisonSocialeBeneficiaire"])
 citrus_apibodacc_df = df.join(from_bodacc_df, on="num_bodacc", suffix="_apibodacc") 
-
-calculate_metrics(citrus_apibodacc_df).mean()
 print(citrus_apibodacc_df)
+
+res = calculate_metrics(citrus_apibodacc_df)
+res.mean()
+filter_metrics_bad(citrus_apibodacc_df, res, "raisonSocialeCedant")
