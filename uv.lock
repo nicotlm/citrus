@@ -115,6 +115,7 @@ source = { virtual = "." }
 dependencies = [
     { name = "boto3" },
     { name = "dotenv" },
+    { name = "logging" },
     { name = "openai" },
     { name = "polars" },
     { name = "requests" },
@@ -124,6 +125,7 @@ dependencies = [
 requires-dist = [
     { name = "boto3", specifier = ">=1.43.41" },
     { name = "dotenv", specifier = ">=0.9.9" },
+    { name = "logging", specifier = ">=0.4.9.6" },
     { name = "openai", specifier = ">=2.44.0" },
     { name = "polars", specifier = ">=1.42.1" },
     { name = "requests", specifier = ">=2.34.2" },
@@ -262,6 +264,12 @@ sdist = { url = "https://files.pythonhosted.org/packages/d3/59/322338183ecda247f
 wheels = [
     { url = "https://files.pythonhosted.org/packages/14/2f/967ba146e6d58cf6a652da73885f52fc68001525b4197effc174321d70b4/jmespath-1.1.0-py3-none-any.whl", hash = "sha256:a5663118de4908c91729bea0acadca56526eb2698e83de10cd116ae0f4e97c64", size = 20419, upload-time = "2026-01-22T16:35:24.919Z" },
 ]
+
+[[package]]
+name = "logging"
+version = "0.4.9.6"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/93/4b/979db9e44be09f71e85c9c8cfc42f258adfb7d93ce01deed2788b2948919/logging-0.4.9.6.tar.gz", hash = "sha256:26f6b50773f085042d301085bd1bf5d9f3735704db9f37c1ce6d8b85c38f2417", size = 96029, upload-time = "2013-06-04T23:43:22.086Z" }
 
 [[package]]
 name = "openai"
