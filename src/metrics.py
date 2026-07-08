@@ -1,5 +1,23 @@
 import polars as pl
 from src import logger
+from unidecode import unidecode
+
+
+# Define a function to remove accents
+def remove_accents(text: str) -> str:
+    return unidecode(text)
+
+
+def _clean_string(df, cols=None):
+    if cols is None:
+        cols = [col for col, dtype in df.schema.items() if dtype == pl.Utf8]
+    
+    for col in cols: 
+        df = df.with_columns(pl.col(col).str.normalize(form="NFKD").str.replace(r"[^\w\s]", ""))
+        df = df.with_columns(pl.col(col).str.to_uppercase())
+        df = df.with_columns(pl.col(col).map_elements(remove_accents, return_dtype=pl.Utf8))
+    
+    return df
 
 
 def _metrics(df, col_citrus, col_bodacc, key="num_bodacc"):
@@ -39,6 +57,7 @@ def _metrics(df, col_citrus, col_bodacc, key="num_bodacc"):
         )
     else:
         logger.info(f"Columns {col_citrus} and {col_bodacc} are string - asserting full equality")
+        df = _clean_string(df, cols=[key, col_citrus, col_bodacc])
         metrics_df = (
             df.with_columns(
                 (pl.col(col_citrus) == pl.col(col_bodacc)).alias(col_assert)
@@ -70,3 +89,10 @@ def calculate_metrics(df):
         )
 
     return metrics_df
+
+
+def filter_metrics_bad(df, res, col_citrus):
+    key = "num_bodacc"
+    col_assert = col_citrus + "_assert"
+    col_bodacc = col_citrus + "_apibodacc"
+    return df.filter(pl.col(key).is_in(res.filter(~pl.col(col_assert))[key].to_list())).select(["lien_bodacc", key, col_citrus, col_bodacc])
