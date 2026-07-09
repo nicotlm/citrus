@@ -16,7 +16,7 @@ script keeps working if the lab changes its default model:
 import json
 import os
 
-from openai import OpenAI
+from langfuse.openai import OpenAI  
 
 DEFAULT_ENDPOINT = "https://llm.lab.sspcloud.fr/api"
 DEFAULT_MODEL = "gemma4-26b-moe"
