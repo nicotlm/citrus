@@ -16,7 +16,7 @@ script keeps working if the lab changes its default model:
 import json
 import os
 
-from langfuse.openai import OpenAI  
+from langfuse.openai import OpenAI
 
 DEFAULT_ENDPOINT = "https://llm.lab.sspcloud.fr/api"
 DEFAULT_MODEL = "gemma4-26b-moe"
@@ -82,7 +82,7 @@ def parse_json_answer(raw: str) -> dict:
         start, end = cleaned.find("{"), cleaned.rfind("}")
         if start != -1 and end != -1 and end > start:
             try:
-                return json.loads(cleaned[start : end + 1])
+                return json.loads(cleaned[start: end + 1])
             except json.JSONDecodeError:
                 return {}
         return {}

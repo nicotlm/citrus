@@ -32,7 +32,7 @@ class bodacc_api:
         return json.loads(annonce_content).get("results")[0]
 
 
-def _keep_numero_immat(personnes) -> list: 
+def _keep_numero_immat(personnes) -> list:
     personnes_with_immat = []
     if isinstance(personnes, list):
         logger.debug(f"Cleaning {personnes} as a list")
@@ -42,14 +42,14 @@ def _keep_numero_immat(personnes) -> list:
     elif isinstance(personnes, dict):
         logger.debug(f"Cleaning {personnes} as a dict")
         if personnes.get("numeroImmatriculation"):
-            personnes_with_immat.append(personnes) 
+            personnes_with_immat.append(personnes)
 
     return personnes_with_immat
 
 
 def _clean_json(json_dict):
     """
-    Clean the response from API : transforms dict as dict 
+    Clean the response from API : transforms dict as dict
     """
     logger.info("Cleaning listeprecedentproprietaire")
     json_dict["listeprecedentproprietaire"] = json.loads(json_dict["listeprecedentproprietaire"])

@@ -14,7 +14,7 @@ def _clean_string(df, cols=None):
     
     logger.info(f"Cleaning string format of columns {cols}")
 
-    for col in cols: 
+    for col in cols:
         df = df.with_columns(pl.col(col).str.normalize(form="NFKD").str.replace(r"[^\w\s]", ""))
         df = df.with_columns(pl.col(col).str.to_uppercase())
         df = df.with_columns(pl.col(col).map_elements(remove_accents, return_dtype=pl.Utf8))
@@ -25,7 +25,7 @@ def _clean_string(df, cols=None):
 def _metrics(df, col_citrus, col_bodacc, key="num_bodacc"):
 
     if key not in df.columns:
-        logger.warning(f"Calculate metrics without key. Aborting.")
+        logger.warning("Calculate metrics without key. Aborting.")
         logger.warning(f"Key {key} absent. Available column names are {df.columns}")
         return None
     
@@ -38,7 +38,7 @@ def _metrics(df, col_citrus, col_bodacc, key="num_bodacc"):
     if col_types[col_citrus] != col_types[col_bodacc]:
         logger.warning(f"Columns {col_citrus} and {col_bodacc} are of different types : {col_types[col_citrus]} and {col_types[col_bodacc]}")
 
-        # If both are numeric, convert to float32. 
+        # If both are numeric, convert to float32.
         if col_types[col_bodacc].is_numeric() and col_types[col_citrus].is_numeric():
             logger.warning(f"Columns {col_citrus} and {col_bodacc} are both numeric - casting them to Float")
             df = df.cast({col_bodacc: pl.Float32, col_citrus: pl.Float32})
@@ -86,7 +86,7 @@ def calculate_metrics(df):
         col_bodacc = col_to_assert + "_apibodacc"
         metrics_df = _add_metrics(
             metrics_df,
-            _metrics(df, key=key, col_citrus=col_citrus, col_bodacc=col_bodacc), 
+            _metrics(df, key=key, col_citrus=col_citrus, col_bodacc=col_bodacc),
             key=key
         )
 
