@@ -1,15 +1,19 @@
 from dotenv import load_dotenv
 import logging
+from datetime import datetime
 
 load_dotenv()
 
+# Generate a timestamp for the filename
+timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
+log_filename = f"log/{timestamp}_citrus.log"
 
 # Logging
 logger = logging.getLogger("citrus")
 logger.setLevel(logging.INFO)
 
 # Create handlers
-file_handler = logging.FileHandler("log/citrus.log")
+file_handler = logging.FileHandler(log_filename)
 console_handler = logging.StreamHandler()
 
 # Set level and format
