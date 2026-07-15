@@ -38,7 +38,15 @@ Reponds uniquement avec le JSON, par exemple :
 
 
 def extract_amount(json_dict):
-    logger.info(f"Extracting amount from {json_dict["listeetablissements"]["etablissement"]["origineFonds"]}")
+    originefonds = json_dict.get("listeetablissements", {}).get("etablissement", {})
+    if isinstance(originefonds, list):
+        originefonds = originefonds[0].get("origineFonds", "")
+    elif isinstance(originefonds, dict):
+        originefonds = originefonds.get("origineFonds", "")
+    else:
+        originefonds = ""
+
+    logger.info(f"Extracting amount from '{originefonds}'")
     return ask_json(
-        _build_prompt_llm(json_dict["listeetablissements"]["etablissement"]["origineFonds"])
+        _build_prompt_llm(originefonds)
     )
