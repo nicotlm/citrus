@@ -2,7 +2,7 @@ import os
 if os.getcwd() != '/home/onyxia/work/citrus':
     os.chdir("citrus")
 
-from src.api import bodacc_api, _keep_numero_immat, parse_vente
+from src.bodacc.api import bodacc_api, _keep_numero_immat, parse_vente
 
 api = bodacc_api()
 
