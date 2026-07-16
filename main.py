@@ -15,6 +15,7 @@ api = bodacc_api()
 # Parsing operation Vente
 ###########################
 source = "s3://projet-citrus/data/202607_citrus_bodacc_300ventes.csv"
+# source = "s3://projet-citrus/data/202607_citrus_bodacc_1800op.csv"
 
 df = pl.scan_csv(
     source,
@@ -50,5 +51,11 @@ print(citrus_apibodacc_df)
 
 res = calculate_metrics(citrus_apibodacc_df)
 print(res.mean())
-res.mean().write_csv("res.csv")
-print(filter_metrics_bad(citrus_apibodacc_df, res, "raisonSocialeCedant"))
+
+different_rows = filter_metrics_bad(citrus_apibodacc_df, res, "raisonSocialeCedant")
+print(different_rows)
+
+with open("data/res.txt", "w") as f:
+    f.write(f"Métriques:\n\n{str(res.mean())}\n\nLignes différentes:\n\n{str(different_rows)}")
+
+
