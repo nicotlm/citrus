@@ -1,4 +1,4 @@
-from src.llm_client import ask_json
+from src.llm.client import ask_json
 from src import logger
 
 
@@ -37,7 +37,7 @@ Reponds uniquement avec le JSON, par exemple :
     return llm_prompt
 
 
-def extract_amount(json_dict):
+def extract_amount_vente(json_dict):
     originefonds = json_dict.get("listeetablissements", {}).get("etablissement", {})
     if isinstance(originefonds, list):
         originefonds = originefonds[0].get("origineFonds", "")

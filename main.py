@@ -5,7 +5,7 @@ if os.getcwd() != "/home/onyxia/work/citrus":
     os.chdir("citrus")
 
 from src.api import bodacc_api, parse_vente
-from src.llm_extract import extract_amount
+from src.llm.extract import extract_amount_vente
 from src.metrics import calculate_metrics, filter_metrics_bad, _clean_string
 import polars as pl
 
@@ -36,7 +36,7 @@ res_list = []
 for row in df.iter_rows(named=True):
     bodac_annonce = api.get_annonce_json(row["num_bodacc"])
     regex_dict = parse_vente(bodac_annonce)
-    llm_dict = extract_amount(bodac_annonce)
+    llm_dict = extract_amount_vente(bodac_annonce)
     full_dict = {"num_bodacc": row["num_bodacc"]} | regex_dict | llm_dict
     res_list.append(full_dict)
 
