@@ -91,7 +91,7 @@ def evaluate_vente(source: str):
     logger.info(f"Metrics are \n: {res.mean()}")
 
     metrics_path = "s3://projet-citrus/data/202607_citrus_bodacc_300ventes_metrics.csv"
-    res.drop("num_bodacc").mean().write_csv(
+    res.write_csv(
         metrics_path,
         storage_options={
             "aws_endpoint_url": "https://minio.lab.sspcloud.fr",
