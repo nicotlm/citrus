@@ -36,3 +36,17 @@ def _build_prompt_llm_amount(text_a_extraire, instructions_exemple) -> list[dict
 
     return _build_prompt_llm(text_a_extraire=text_a_extraire, instructions=instr)
 
+
+def _build_prompt_llm_date_comptable(
+    text_a_extraire,
+    instructions_exemple,
+    instructions_complementaires=""
+) -> list[dict]:
+
+    instr = (
+        '- "dateEffetComptable" : extrait la date uniquement à partir du texte' +
+        ' ci dessous.  ' + str(instructions_complementaires) +
+        'Par exemple, ' + str(instructions_exemple)
+    )
+
+    return _build_prompt_llm(text_a_extraire=text_a_extraire, instructions=instr)
