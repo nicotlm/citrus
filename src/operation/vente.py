@@ -1,4 +1,4 @@
-from src.llm.extract import _build_prompt_llm_amount
+from src.llm.prompt import _build_prompt_llm_amount
 from src.llm.client import ask_json
 from src import logger
 
