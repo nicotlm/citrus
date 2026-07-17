@@ -6,7 +6,7 @@ if os.getcwd() != "/home/onyxia/work/citrus":
 
 from src.bodacc.api import bodacc_api
 from src.operation.vente import parse_vente, extract_amount_vente
-from src.metrics import calculate_metrics, filter_metrics_bad, _clean_string
+from src.modele.metrics import calculate_metrics, filter_metrics_bad, _clean_string
 from src.utils import parse_to_date_df
 
 import polars as pl
