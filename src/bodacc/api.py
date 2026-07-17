@@ -77,7 +77,7 @@ def _keep_numero_immat(personnes) -> list:
     return personnes_with_immat
 
 
-def _string_to_dict(json_dict, key):
+def _string_to_dict(json_dict: dict, key: str) -> dict:
 
     if "listeprecedentproprietaire" in json_dict.keys():
         logger.info(f"Cleaning {key}")
@@ -86,7 +86,7 @@ def _string_to_dict(json_dict, key):
     return json_dict
 
 
-def _clean_json(json_dict):
+def _clean_json(json_dict: dict) -> dict:
     """
     Clean the response from API : transforms dict stored as a string into a Python dict
     """
@@ -104,7 +104,7 @@ def _clean_json(json_dict):
     return json_dict
 
 
-def _get_siren(json_dict, key="listeprecedentproprietaire_filtered"):
+def _get_siren(json_dict: dict, key="listeprecedentproprietaire_filtered") -> str:
     """
     Extract from JSON dict the first Siren from defined key (either listeprecedentproprietaire or listepersonnes)
     """
@@ -117,7 +117,7 @@ def _get_siren(json_dict, key="listeprecedentproprietaire_filtered"):
     return sirene
 
 
-def _get_rs(json_dict, key="listeprecedentproprietaire_filtered"):
+def _get_rs(json_dict: dict, key="listeprecedentproprietaire_filtered") -> str:
     """
     Extract from JSON dict the first raison sociale from defined key (either listeprecedentproprietaire or listepersonnes)
     """
@@ -125,8 +125,8 @@ def _get_rs(json_dict, key="listeprecedentproprietaire_filtered"):
     return json_dict[key][0].get("denomination", "")
 
 
-def _get_annee_annonce(json_dict):
+def _get_annee_annonce(json_dict: dict) -> int:
     """
     """
     logger.debug(f"Extraction date parution from {json_dict}")
-    return json_dict.get("dateparution", "")[:5]
+    return int(json_dict.get("dateparution", "")[:4])
