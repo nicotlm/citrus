@@ -65,8 +65,6 @@ from_bodacc_df = parse_to_date_df(from_bodacc_df, "dateEffetComptable", format="
 citrus_apibodacc_df = df.join(from_bodacc_df, on="num_bodacc", suffix="_apibodacc")
 print(citrus_apibodacc_df)
 
-citrus_apibodacc_df.write_csv("data/res.csv")
-
 citrus_apibodacc_df.write_csv(
     "s3://projet-citrus/data/202607_citrus_bodacc_300ventes_extraction.csv",
     storage_options={
@@ -97,5 +95,5 @@ res.mean().write_csv(
 different_rows = filter_metrics_bad(citrus_apibodacc_df, res, "raisonSocialeCedant")
 print(different_rows)
 
-with open("data/res.txt", "w") as f:
-    f.write(f"Métriques:\n\n{str(res.mean())}\n\nLignes différentes:\n\n{str(different_rows)}")
+different_rows = filter_metrics_bad(citrus_apibodacc_df, res, "dateEffetComptable")
+print(different_rows)
