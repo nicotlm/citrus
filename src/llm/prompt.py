@@ -31,8 +31,7 @@ def _build_prompt_llm_amount(text_a_extraire, instructions_exemple) -> list[dict
     instr = (
         '- "montantNet" : extrait le montant en euros uniquement à partir du texte' +
         ' ci dessous. Ne met pas de centimes ou de virgules, juste le montant en euros. ' +
-        'Par exemple, pour le texte ' + "'" + str(instructions_exemple) + "'" +
-        ' tu dois retourner {"montantNet": 330000}.'
+        'Par exemple, ' + str(instructions_exemple)
     )
 
     return _build_prompt_llm(text_a_extraire=text_a_extraire, instructions=instr)

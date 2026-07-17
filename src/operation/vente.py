@@ -4,7 +4,11 @@ from src import logger
 
 
 def _build_prompt_llm_vente_amount(text_a_extraire) -> list[dict]:
-    exemple_vente_amount = "Etablissement principal acquis par achat au prix stipulé de 330000 EUR"
+    exemple_vente_amount = (
+        "pour le texte 'Etablissement principal acquis " + 
+        "par achat au prix stipulé de 330000 EUR'," +
+        " tu dois retourner {'montantNet': 330000}"
+    )
 
     return _build_prompt_llm_amount(
         text_a_extraire=text_a_extraire,
