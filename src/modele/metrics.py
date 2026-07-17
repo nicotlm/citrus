@@ -110,3 +110,17 @@ def filter_metrics_bad(df, res, col_citrus):
     col_assert = col_citrus + "_assert"
     col_bodacc = col_citrus + "_apibodacc"
     return df.filter(pl.col(key).is_in(res.filter(~pl.col(col_assert))[key].to_list())).select(["lien_bodacc", key, col_citrus, col_bodacc])
+
+
+def print_df_md(df):
+    with pl.Config(
+        tbl_formatting="ASCII_MARKDOWN",
+        tbl_hide_dataframe_shape=True,
+        tbl_hide_column_data_types=True,
+        tbl_rows=-1,   # show all rows; default caps at 10
+    ):
+        print(df)
+
+
+def filter_metrics_bad_md(df, res, col_citrus):
+    return print_df_md(filter_metrics_bad(df, res, col_citrus))
