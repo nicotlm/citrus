@@ -26,6 +26,7 @@ def get_client() -> OpenAI:
     return OpenAI(
         base_url=os.environ.get("LLM_LAB_ENDPOINT", DEFAULT_ENDPOINT),
         api_key=os.environ.get("LLM_LAB_API_KEY", ""),
+        max_retries=5
     )
 
 
