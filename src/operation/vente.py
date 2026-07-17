@@ -32,10 +32,14 @@ def extract_amount_vente(json_dict):
 
 
 def extract_date_comptable_vente(json_dict):
-
+    logger.info(f"Extracting dateEffetComptable")
     date_comptable = json_dict.get("acte", {}).get("vente", {}).get("publiciteLegale", {}).get("date")
-    if not date_comptable:
+    if date_comptable:
+        logger.info(f"dateEffetComptable extracted from publiciteLegale: {date_comptable}")
+    else:
         date_comptable = json_dict.get("acte", {}).get("dateCommencementActivite", {})
+        if date_comptable:
+            logger.info(f"dateEffetComptable extracted from dateCommencementActivite: {date_comptable}")
         if not date_comptable:
             descriptif = json_dict.get("acte", {}).get("vente", {}).get("descriptif", "")
             if descriptif:
@@ -46,14 +50,17 @@ def extract_date_comptable_vente(json_dict):
                     "propriétaires: 1 rue de la République 59290 Wasquehal. Siège social du nouveau propriétaire: " +
                     "2 rue Tartampion 59100 Roubaix. Les oppositions seront reçues dans les dix jours de la dernière " +
                     " en date des publications prévues par la loi pour la correspondance et la validité.'" +
-                    " Tu dois répondre {'dateEffetComptable': 17/06/2026}."
+                    " Tu dois répondre {'dateEffetComptable': 17-06-2026}."
                 )
+                logger.info(f"Asking a LLM to extract dateEffetComptable from descriptif")
                 date_comptable = ask_json(
                     _build_prompt_llm_date_comptable(
                         descriptif,
                         instructions_exemple=exemple,
                         instructions_complementaires="Ne réponds rien si tu trouves plusieurs dates dans le texte.")
                     ).get("dateEffetComptable")
+                if date_comptable:
+                    logger.info(f"dateEffetComptable extracted with LLM from descriptif: {date_comptable}")
         else:
             date_comptable = json_dict.get("dateparution", "")
 

@@ -45,7 +45,7 @@ def _build_prompt_llm_date_comptable(
 
     instr = (
         '- "dateEffetComptable" : extrait la date uniquement à partir du texte' +
-        ' ci dessous. Renvoie la date dans le format JJ/MM/AAAA. ' + str(instructions_complementaires) +
+        ' ci dessous. Renvoie la date dans le format JJ-MM-AAAA. ' + str(instructions_complementaires) +
         'Par exemple, ' + str(instructions_exemple)
     )
 
