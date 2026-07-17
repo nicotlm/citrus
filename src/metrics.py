@@ -43,6 +43,10 @@ def _metrics(df, col_citrus, col_bodacc, key="num_bodacc"):
             logger.warning(f"Columns {col_citrus} and {col_bodacc} are both numeric - casting them to Float")
             df = df.cast({col_bodacc: pl.Float32, col_citrus: pl.Float32})
 
+        elif col_types[col_bodacc].is_temporal() and col_types[col_citrus].is_temporal():
+            logger.warning(f"Columns {col_citrus} and {col_bodacc} are both temporal - casting them to Date")
+            df = df.cast({col_bodacc: pl.Date, col_citrus: pl.Date})
+
         # Else, convert all to string
         else:
             logger.warning(f"Columns {col_citrus} and {col_bodacc} are not numeric - casting them to String")
@@ -54,6 +58,14 @@ def _metrics(df, col_citrus, col_bodacc, key="num_bodacc"):
         metrics_df = (
             df.with_columns(
                 (pl.col(col_citrus) - pl.col(col_bodacc).abs() < 0.1).alias(col_assert)
+            )
+            .select([key, col_assert])
+        )
+    elif col_types[col_citrus].is_temporal():
+        logger.info(f"Columns {col_citrus} and {col_bodacc} are temporal - equal with 0 precision")
+        metrics_df = (
+            df.with_columns(
+                (pl.col(col_citrus)==pl.col(col_bodacc)).alias(col_assert)
             )
             .select([key, col_assert])
         )
