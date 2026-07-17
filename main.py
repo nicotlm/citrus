@@ -5,7 +5,7 @@ if os.getcwd() != "/home/onyxia/work/citrus":
     os.chdir("citrus")
 
 from src.bodacc.api import bodacc_api, parse_vente
-from src.llm.extract import extract_amount_vente
+from src.operation.vente import extract_amount_vente
 from src.metrics import calculate_metrics, filter_metrics_bad, _clean_string
 import polars as pl
 
