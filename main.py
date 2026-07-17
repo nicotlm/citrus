@@ -4,8 +4,8 @@ import os
 if os.getcwd() != "/home/onyxia/work/citrus":
     os.chdir("citrus")
 
-from src.bodacc.api import bodacc_api, parse_vente
-from src.operation.vente import extract_amount_vente
+from src.bodacc.api import bodacc_api
+from src.operation.vente import parse_vente, extract_amount_vente
 from src.metrics import calculate_metrics, filter_metrics_bad, _clean_string
 import polars as pl
 
@@ -34,7 +34,7 @@ df = df.with_columns(
 )
 
 res_list = []
-for row in df.iter_rows(named=True):
+for row in df[:5].iter_rows(named=True):
     bodac_annonce = api.get_annonce_json(row["num_bodacc"])
     regex_dict = parse_vente(bodac_annonce)
     llm_dict = extract_amount_vente(bodac_annonce)
@@ -57,5 +57,3 @@ print(different_rows)
 
 with open("data/res.txt", "w") as f:
     f.write(f"Métriques:\n\n{str(res.mean())}\n\nLignes différentes:\n\n{str(different_rows)}")
-
-

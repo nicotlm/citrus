@@ -12,10 +12,28 @@ class bodacc_api:
         else:
             self.url = f"{hook}/{dataset_id}"
 
-    def requests_url(self, annonce_id):
+    def requests_url(self, annonce_id: str) -> str:
+        """
+        Constructs url to fetch bodacc api from annonce_id
+
+        Args:
+            annonce_id (str)
+        
+        Returns: 
+            url of the API requests, as a string
+        """
         return f"{self.url}?where=id%3D%22{annonce_id}%22&limit=1&offset=0&timezone=UTC&include_links=false&include_app_metas=false"
 
-    def get_annonce(self, annonce_id):
+    def get_annonce(self, annonce_id: str):
+        """
+        Fetch an annonce from bodacc api
+
+        Args: 
+            annonce_id (str): announce id to fetch
+        
+        Returns: 
+            the response (a requests.response object)
+        """
         request_url = self.requests_url(annonce_id)
         logger.info(f"Fetching info from {request_url} for annonce {annonce_id}")
         try:
@@ -26,13 +44,25 @@ class bodacc_api:
 
         return response
 
-    def get_annonce_json(self, annonce_id):
+    def get_annonce_json(self, annonce_id: str) -> dict:
+        """
+        Extract the first result of a call from Bodacc API
+
+        Arg: 
+            annonce_id (str): bodacc annonce id to fetch
+
+        Returns: 
+            First response, parsed as a json into a Python dict  
+        """
         annonce_content = self.get_annonce(annonce_id).content
         logger.info("Extracting results from annonce content")
         return json.loads(annonce_content).get("results")[0]
 
 
 def _keep_numero_immat(personnes) -> list:
+    """
+    Filters some keys to keep the one only with immatriculation numbers
+    """
     personnes_with_immat = []
     if isinstance(personnes, list):
         logger.debug(f"Cleaning {personnes} as a list")
@@ -47,20 +77,29 @@ def _keep_numero_immat(personnes) -> list:
     return personnes_with_immat
 
 
+def _string_to_dict(json_dict, key):
+
+    if "listeprecedentproprietaire" in json_dict.keys():
+        logger.info(f"Cleaning {key}")
+        json_dict[key] = json.loads(json_dict[key])
+
+    return json_dict
+
+
 def _clean_json(json_dict):
     """
-    Clean the response from API : transforms dict as dict
+    Clean the response from API : transforms dict stored as a string into a Python dict
     """
-    logger.info("Cleaning listeprecedentproprietaire")
-    json_dict["listeprecedentproprietaire"] = json.loads(json_dict["listeprecedentproprietaire"])
+
+    json_dict = _string_to_dict(json_dict, "listeprecedentproprietaire")
     json_dict["listeprecedentproprietaire_filtered"] = _keep_numero_immat(json_dict["listeprecedentproprietaire"].get("personne", []))
 
-    logger.info("Cleaning listepersonnes")
-    json_dict["listepersonnes"] = json.loads(json_dict["listepersonnes"])
+    json_dict = _string_to_dict(json_dict, "listepersonnes")
     json_dict["listepersonnes_filtered"] = _keep_numero_immat(json_dict["listepersonnes"].get("personne", []))
 
-    logger.info("Cleaning listeetablissements")
-    json_dict["listeetablissements"] = json.loads(json_dict["listeetablissements"])
+    json_dict = _string_to_dict(json_dict, "listeetablissements")
+
+    json_dict = _string_to_dict(json_dict, "acte")
 
     return json_dict
 
@@ -86,26 +125,8 @@ def _get_rs(json_dict, key="listeprecedentproprietaire_filtered"):
     return json_dict[key][0].get("denomination", "")
 
 
-def parse_vente(json_dict):
+def _get_annee_annonce(json_dict):
     """
-    Extract from JSON dict sireneCedant, raisonSocialeCedant, sirenBeneficiaire, raisonSocialeBeneficiaire
     """
-    logger.info("Cleaning json_dict")
-    logger.debug(f"json_dict is {json_dict}")
-    json_dict = _clean_json(json_dict)
-    sireneCedant = _get_siren(json_dict, key="listeprecedentproprietaire_filtered")
-    raisonSocialeCedant = _get_rs(json_dict, key="listeprecedentproprietaire_filtered")
-    sirenBeneficiaire = _get_siren(json_dict, key="listepersonnes_filtered")
-    raisonSocialeBeneficiaire = _get_rs(json_dict, key="listepersonnes_filtered")
-
-    return {
-        "sirenCedant": sireneCedant,
-        "raisonSocialeCedant": raisonSocialeCedant,
-        "sirenBeneficiaire": sirenBeneficiaire,
-        "raisonSocialeBeneficiaire": raisonSocialeBeneficiaire,
-        "source": json_dict["url_complete"]
-    }
-
-# 'montantNet' : en ke, à extraire depuis json.loads(json_dict['listeetablissements'])["etablissement"]["origineFonds"] ('siège et établissement principal acquis par achat au prix stipulé de 155000.00 euros')
-# 'dateEffetComptable' : extraire depuis date de commencement ou commentaires ? défaut dateparution ?
-# 'dateRealisationJuridique' : extraire depuis date de commencement ou commentaires ?
+    logger.debug(f"Extraction date parution from {json_dict}")
+    return json_dict.get("dateparution", "")[:5]
