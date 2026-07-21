@@ -1,12 +1,15 @@
 from dotenv import load_dotenv
 import logging
+import os
 from datetime import datetime
 
 load_dotenv()
 
 # Generate a timestamp for the filename
 timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
-log_filename = f"log/{timestamp}_citrus.log"
+log_dir = "log"
+os.makedirs(log_dir, exist_ok=True)
+log_filename = f"{log_dir}/{timestamp}_citrus.log"
 
 # Logging
 logger = logging.getLogger("citrus")
