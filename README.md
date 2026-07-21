@@ -117,12 +117,8 @@ S3 / MinIO access is read from an AWS profile named `service-account` pointing a
 `https://minio.lab.sspcloud.fr` (the default SSP Cloud setup), so no extra
 configuration is needed there when running on the platform.
 
-The logger writes to `log/<timestamp>_citrus.log`, so make sure a `log/`
-directory exists:
-
-```bash
-mkdir -p log
-```
+The logger writes to `log/<timestamp>_citrus.log`. It creates a `log/` directory
+if one doesn't already exist.
 
 ## Usage
 
