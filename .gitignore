@@ -1,3 +1,6 @@
+# Docs
+*.gv
+
 # Data
 data/
 
