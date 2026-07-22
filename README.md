@@ -27,6 +27,8 @@ formatted differently for each one:
 | `TUP` | Transmission universelle de patrimoine     | "transmission universelle de patrimoine" |
 | `LG`  | Location-gérance                           | "location-gérance" / "location gérance" |
 
+More detailled types of restructuring exist and will be dealt with later on. 
+
 `VE` is the default: an announcement that matches none of the other three
 keyword families is treated as a vente.
 
@@ -152,7 +154,7 @@ resolved to its public record via `src.utils.annuaire`.
 ## Status
 
 - ✅ Fetching from the BODACC API
-- ✅ LLM classification of the restructuring type (`VE` / `FU` / `TUP` / `LG`)
+- ⏳ LLM classification of the restructuring type - work in progress
 - ✅ Full parsing + evaluation pipeline for **ventes**
 - ⏳ Dedicated parsers for **fusion**, **transmission universelle de patrimoine**
   and **location-gérance** (not yet implemented)
