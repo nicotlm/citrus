@@ -39,7 +39,7 @@ The pipeline mixes deterministic parsing with LLM calls:
    first result as a Python dict.
 2. **Classify** — `classify_type_operation` gathers the free-text description
    from wherever it lives in the payload and asks an LLM to return one of the
-   four codes above.
+   four codes above (work in progress).
 3. **Parse** — depending on the type, the matching parser extracts the
    structured fields. Structured/identifier fields (SIREN, raison sociale) are
    read directly from the JSON; free-form fields that vary from one greffe to
@@ -56,7 +56,6 @@ the model to answer with a single JSON object, which is parsed back into a dict.
 ```
 citrus/
 ├── main.py                     # entry point: run the vente evaluation pipeline
-├── classify_type.py            # entry point: classify one announcement's type
 ├── test.py                     # quick manual checks on a single announcement
 └── src/
     ├── __init__.py             # loads .env, configures the "citrus" logger
@@ -67,8 +66,7 @@ citrus/
     │   ├── client.py           # OpenAI-compatible client, ask() / ask_json()
     │   └── prompt.py           # prompt builders (base, amount, date, type)
     ├── operation/
-    │   ├── vente.py            # vente parser + LLM amount / date extraction
-    │   └── type_operation.py   # LLM classifier for the restructuring type
+    │   └── vente.py            # vente parser + LLM amount / date extraction
     └── modele/
         ├── evaluate.py         # evaluate_vente: fetch → parse → compare → save
         └── metrics.py          # per-field comparison metrics
@@ -121,25 +119,6 @@ The logger writes to `log/<timestamp>_citrus.log`. It creates a `log/` directory
 if one doesn't already exist.
 
 ## Usage
-
-### Classify the type of a single announcement
-
-```bash
-uv run classify_type.py A202601261236
-```
-
-This prints the text sent to the model and the resulting code, e.g.
-`A202601261236 -> VE (Vente / cession)`.
-
-Programmatically:
-
-```python
-from src.bodacc.api import bodacc_api
-from src.operation.type_operation import classify_type_operation
-
-annonce = bodacc_api().get_annonce_json("A202601261236")
-type_operation = classify_type_operation(annonce)  # -> "VE" | "FU" | "TUP" | "LG"
-```
 
 ### Run the vente evaluation pipeline
 
